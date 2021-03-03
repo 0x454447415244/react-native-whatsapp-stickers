@@ -11,6 +11,26 @@ import Foundation
 @objc(RNWhatsAppStickers)
 class RNWhatsAppStickers: NSObject {
     var stickerPack: StickerPack!;
+    
+    @objc
+    func createStickerPackFromURL(_ config: NSDictionary,
+                           resolver resolve: RCTPromiseResolveBlock,
+                           rejecter reject: RCTPromiseRejectBlock) -> Void {
+        do {
+            stickerPack = try StickerPack(identifier: RCTConvert.nsString(config["identifier"]),
+                            name: RCTConvert.nsString(config["name"]),
+                            publisher: RCTConvert.nsString(config["publisher"]),
+                            trayImageFileURL: RCTConvert.nsString(config["trayImageFileName"]),
+                            publisherWebsite: RCTConvert.nsString(config["publisherWebsite"]),
+                            privacyPolicyWebsite: RCTConvert.nsString(config["privacyPolicyWebsite"]),
+                            licenseAgreementWebsite: RCTConvert.nsString(config["licenseAgreementWebsite"]))
+            resolve("success")
+
+        } catch {
+            NSLog("\(error)")
+            reject("RNWhatsAppStickers", "an unknown error occured for whats app stickers", error)
+        }
+    }
    
     @objc
     func createStickerPack(_ config: NSDictionary,
@@ -26,6 +46,22 @@ class RNWhatsAppStickers: NSObject {
                             licenseAgreementWebsite: RCTConvert.nsString(config["licenseAgreementWebsite"]))
             resolve("success")
 
+        } catch {
+            NSLog("\(error)")
+            reject("RNWhatsAppStickers", "an unknown error occured for whats app stickers", error)
+        }
+    }
+    
+    @objc
+    func addStickerFromURL(_ fileURLString: String,
+                    emojis: Array<String>,
+                    resolver resolve: RCTPromiseResolveBlock,
+                    rejecter reject: RCTPromiseRejectBlock){
+        do {
+            let fileURL = URL(string: fileURLString)!
+            try stickerPack.addSticker(contentsOfFileURL: fileURL,
+                                   emojis: emojis)
+            resolve("success")
         } catch {
             NSLog("\(error)")
             reject("RNWhatsAppStickers", "an unknown error occured for whats app stickers", error)

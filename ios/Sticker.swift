@@ -79,6 +79,25 @@ class Sticker {
     /**
      *  Initializes a sticker with an image file and emojis.
      *
+     *  - Parameter fileURL: url of the image in the bundle, including extension. Must be either png or webp.
+     *  - Parameter emojis: emojis associated with this sticker.
+     *
+     *  - Throws:
+     - .fileNotFound if file has not been found
+     - .unsupportedImageFormat if image is not png or webp
+     - .imageTooBig if the image file size is above the supported limit (100KB)
+     - .incorrectImageSize if the image is not within the allowed size
+     - .animatedImagesNotSupported if the image is animated
+     - .tooManyEmojis if there are too many emojis assigned to the sticker
+     */
+    init(contentsOfFileURL fileURL: URL, emojis: [String]?) throws {
+        self.imageData = try ImageData.imageDataIfCompliant(contentsOfURL: fileURL, isTray: false)
+        self.emojis = try StickerEmojis.canonicalizedEmojis(rawEmojis: emojis)
+    }
+    
+    /**
+     *  Initializes a sticker with an image file and emojis.
+     *
      *  - Parameter filename: name of the image in the bundle, including extension. Must be either png or webp.
      *  - Parameter emojis: emojis associated with this sticker.
      *

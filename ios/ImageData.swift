@@ -105,6 +105,20 @@ class ImageData {
         self.data = data
         self.type = type
     }
+    
+    static func imageDataIfCompliant(contentsOfURL imageURL: URL, isTray: Bool) throws -> ImageData {
+        
+        let fileExtension: String = (imageURL.absoluteString as NSString).pathExtension
+        
+        //let data = try Data(contentsOf: URL(string: imageURLString)!)
+        let data = try Data(contentsOf: imageURL)
+        
+        guard let imageType = ImageDataExtension(rawValue: fileExtension) else {
+            throw StickerPackError.unsupportedImageFormat(fileExtension)
+        }
+
+        return try ImageData.imageDataIfCompliant(rawData: data, extensionType: imageType, isTray: isTray)
+    }
 
     static func imageDataIfCompliant(contentsOfFile filename: String, isTray: Bool) throws -> ImageData {
         let fileExtension: String = (filename as NSString).pathExtension

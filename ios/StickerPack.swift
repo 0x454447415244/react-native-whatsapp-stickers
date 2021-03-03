@@ -49,6 +49,48 @@ class StickerPack {
     var formattedSize: String {
         return ByteCountFormatter.string(fromByteCount: bytesSize, countStyle: .file)
     }
+    
+    /**
+     *  Initializes a sticker pack with a name, publisher and tray image name.
+     *
+     *  - Parameter name: title of the sticker pack
+     *  - Parameter publisher: publisher of the sticker pack
+     *  - Parameter publisherWebsite: website of publisher
+     *  - Parameter privacyPolicyWebsite: website of privacy policy
+     *  - Parameter licenseAgreementWebsite: website of license agreement
+     *
+     *  - Throws:
+     - .emptyString if the name and publisher are empty strings
+     - .stringTooLong if the name and publisher are more than 128 character
+     - .fileNotFound if tray image file has not been found
+     - .unsupportedImageFormat if tray image file is not png or webp
+     - .imageTooBig if the image file size is above the supported limit (100KB)
+     - .incorrectImageSize if the tray image is not within the allowed size
+     - .animatedImagesNotSupported if the tray image is animated
+     */
+    init(identifier: String, name: String, publisher: String, trayImageFileURL: String, publisherWebsite: String?, privacyPolicyWebsite: String?, licenseAgreementWebsite: String?) throws {
+        guard !name.isEmpty && !publisher.isEmpty && !identifier.isEmpty else {
+            throw StickerPackError.emptyString
+        }
+
+        guard name.count <= Limits.MaxCharLimit128 && publisher.count <= Limits.MaxCharLimit128 && identifier.count <= Limits.MaxCharLimit128 else {
+            throw StickerPackError.stringTooLong
+        }
+
+        self.identifier = identifier
+        self.name = name
+        self.publisher = publisher
+
+        let trayImageURL = URL(string: trayImageFileURL)!
+        let trayCompliantImageData: ImageData = try ImageData.imageDataIfCompliant(contentsOfURL: trayImageURL, isTray: true)
+        self.trayImage = trayCompliantImageData
+
+        stickers = []
+
+        self.publisherWebsite = publisherWebsite
+        self.privacyPolicyWebsite = privacyPolicyWebsite
+        self.licenseAgreementWebsite = licenseAgreementWebsite
+    }
 
     /**
      *  Initializes a sticker pack with a name, publisher and tray image name.
@@ -132,6 +174,27 @@ class StickerPack {
         self.licenseAgreementWebsite = licenseAgreementWebsite
     }
 
+    
+    /**
+     *  Adds a sticker to the current sticker pack.
+     *
+     *  - Parameter fileURL: url of the sticker (png or webp).
+     *  - Parameter emojis: emojis associated with the sticker.
+     *
+     *  - Throws:
+     - .stickersNumOutsideAllowableRange if current number of stickers is not withing limits
+     - All exceptions from Sticker(contentsOfFile:emojis:)
+     */
+    func addSticker(contentsOfFileURL fileURL: URL, emojis: [String]?) throws {
+        guard stickers.count <= Limits.MaxStickersPerPack else {
+            throw StickerPackError.stickersNumOutsideAllowableRange
+        }
+
+        let sticker: Sticker = try Sticker(contentsOfFileURL: fileURL, emojis: emojis)
+
+        stickers.append(sticker)
+    }
+    
     /**
      *  Adds a sticker to the current sticker pack.
      *

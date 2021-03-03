@@ -7,7 +7,16 @@
     return YES;
 }
 
+RCT_EXTERN_METHOD(createStickerPackFromURL:(NSDictionary *)config
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(createStickerPack:(NSDictionary *)config
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(addStickerFromURL:(NSString *)fileURLString
+                  emojis:(NSArray *)emojis
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject)
 
