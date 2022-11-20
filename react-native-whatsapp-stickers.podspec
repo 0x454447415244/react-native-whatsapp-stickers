@@ -19,8 +19,9 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
+  s.dependency "libwebp"
 
-  s.ios.vendored_frameworks = "**/WebP.framework"
+  #s.ios.vendored_frameworks = "**/WebP.framework"
 
   s.framework = "UIKit"
   s.framework = "CoreFoundation"
