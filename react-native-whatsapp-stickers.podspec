@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.dependency "React"
   s.dependency "libwebp"
 
-  #s.ios.vendored_frameworks = "**/WebP.framework"
+  s.ios.vendored_frameworks = "**/WebP.framework"
 
   s.framework = "UIKit"
   s.framework = "CoreFoundation"
